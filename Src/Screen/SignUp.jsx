@@ -2,6 +2,8 @@ import Button from '../Components/Button';
 import Input from '../Components/Input';
 import { useState } from 'react';
 import { View, StyleSheet, Text, Pressable } from 'react-native';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+const auth = getAuth();
 
 const genderOption = ['Male', 'Female'];
 
@@ -14,7 +16,17 @@ export default function SignUp({ navigation }) {
   const [name, setName] = useState("");
 
   const singUp = () => {
-
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log('User Created', user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+      });
   }
 
   return (
@@ -67,8 +79,13 @@ export default function SignUp({ navigation }) {
           })
         }
         <View style={styles.forget}>
-          <Button title={'Sign Up'} customStyles={styles.overWriteButton} />
-          <Pressable onPress={() => { navigation.navigate("SignIn") }}>
+          <Button
+            onPress={singUp}
+            title={'Sign Up'}
+            customStyles={styles.overWriteButton} />
+          <Pressable
+            onPress={() => { navigation.navigate("SignIn") }}
+          >
             <Text>Already have an account? <Text style={{ color: 'green', fontWeight: 'bold' }}>Log In</Text></Text>
           </Pressable>
         </View>
